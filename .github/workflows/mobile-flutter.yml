@@ -77,27 +77,31 @@ concurrency:
 
 jobs:
 
-  # determine-environment:
-  #   name: Determine Environment
-  #   if: github.event_name != 'pull_request'
-  #   runs-on: [self-hosted, build, windows-latest]
-  #   outputs:
-  #     environment: ${{ steps.map.outputs.environment }}
-  #   steps:
-  #     - id: map
-  #       shell: bash
-  #       run: |
-  #         case "${GITHUB_REF_NAME}" in
-  #           develop)   echo "environment=DEV" >> "$GITHUB_OUTPUT" ;;
-  #           uat)       echo "environment=UAT" >> "$GITHUB_OUTPUT" ;;
-  #           release/*) echo "environment=STAGING" >> "$GITHUB_OUTPUT" ;;
-  #           main)      echo "environment=PROD" >> "$GITHUB_OUTPUT" ;;
-  #           *)          echo "environment=DEV" >> "$GITHUB_OUTPUT" ;;
-  #         esac
+  determine-environment:
+    name: Determine Environment
+    if: github.event_name != 'pull_request'
+    runs-on:
+      # - self-hosted
+      # - build
+      - windows-latest
+
+    outputs:
+      environment: ${{ steps.map.outputs.environment }}
+    steps:
+      - id: map
+        shell: bash
+        run: |
+          case "${GITHUB_REF_NAME}" in
+            develop)   echo "environment=DEV" >> "$GITHUB_OUTPUT" ;;
+            uat)       echo "environment=UAT" >> "$GITHUB_OUTPUT" ;;
+            release/*) echo "environment=STAGING" >> "$GITHUB_OUTPUT" ;;
+            main)      echo "environment=PROD" >> "$GITHUB_OUTPUT" ;;
+            *)          echo "environment=DEV" >> "$GITHUB_OUTPUT" ;;
+          esac
 
   validate:
     name: Common Validation
-    # needs: [determine-environment]
+    needs: [determine-environment]
     if: always() && !failure()
     uses: devops-futuretech/dhargun-ghactions-reusable-workflows/.github/workflows/awl-common-validation.yml@main
     with:
@@ -122,7 +126,7 @@ jobs:
   security-scan:
     name: Security Scan (GitHub Advanced Security)
     needs: [build]
-    runs-on: [self-hosted, build, windows-latest]
+    runs-on: [windows-latest]
     permissions:
       contents: read
     steps:
@@ -145,7 +149,7 @@ jobs:
     name: Distribute Build (Firebase App Distribution)
     needs: [determine-environment, security-scan]
     if: github.event_name == 'push' && needs.determine-environment.outputs.environment != 'PROD'
-    runs-on: [self-hosted, build, windows-latest]
+    runs-on: [windows-latest]
     environment:
       name: ${{ needs.determine-environment.outputs.environment }}
     steps:
