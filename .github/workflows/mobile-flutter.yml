@@ -37,7 +37,7 @@ name: Digital Sauda Mobile - CI/CD
 
 on:
   workflow_dispatch:
-    inputs:
+
       # ------------------------------------------------------------------------------------
       # [GITHUB ENVIRONMENT]
       #
@@ -77,36 +77,36 @@ concurrency:
 
 jobs:
 
-  determine-environment:
-    name: Determine Environment
-    if: github.event_name != 'pull_request'
-    runs-on: [self-hosted, build, windows-latest]
-    outputs:
-      environment: ${{ steps.map.outputs.environment }}
-    steps:
-      - id: map
-        shell: bash
-        run: |
-          case "${GITHUB_REF_NAME}" in
-            develop)   echo "environment=DEV" >> "$GITHUB_OUTPUT" ;;
-            uat)       echo "environment=UAT" >> "$GITHUB_OUTPUT" ;;
-            release/*) echo "environment=STAGING" >> "$GITHUB_OUTPUT" ;;
-            main)      echo "environment=PROD" >> "$GITHUB_OUTPUT" ;;
-            *)          echo "environment=DEV" >> "$GITHUB_OUTPUT" ;;
-          esac
+  # determine-environment:
+  #   name: Determine Environment
+  #   if: github.event_name != 'pull_request'
+  #   runs-on: [self-hosted, build, windows-latest]
+  #   outputs:
+  #     environment: ${{ steps.map.outputs.environment }}
+  #   steps:
+  #     - id: map
+  #       shell: bash
+  #       run: |
+  #         case "${GITHUB_REF_NAME}" in
+  #           develop)   echo "environment=DEV" >> "$GITHUB_OUTPUT" ;;
+  #           uat)       echo "environment=UAT" >> "$GITHUB_OUTPUT" ;;
+  #           release/*) echo "environment=STAGING" >> "$GITHUB_OUTPUT" ;;
+  #           main)      echo "environment=PROD" >> "$GITHUB_OUTPUT" ;;
+  #           *)          echo "environment=DEV" >> "$GITHUB_OUTPUT" ;;
+  #         esac
 
   validate:
     name: Common Validation
     needs: [determine-environment]
     if: always() && !failure()
-    uses: AWL-Org/awl-ghactions-reusable-workflows/.github/workflows/awl-common-validation.yml@v1.0.0
+    uses: devops-futuretech/dhargun-ghactions-reusable-workflows/.github/workflows/awl-common-validation.yml@main
     with:
       environment: ${{ needs.determine-environment.outputs.environment || 'DEV' }}
 
   build:
     name: Build Flutter Android
     needs: [validate]
-    uses: AWL-Org/awl-ghactions-reusable-workflows/.github/workflows/awl-build-flutter-android.yml@v1.0.0
+    uses: devops-futuretech/dhargun-ghactions-reusable-workflows/.github/workflows/reusable-build-flutter-android.yml@main
     with:
       working-directory: "mobile"
       flutter-version: "stable"
