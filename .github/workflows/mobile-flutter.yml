@@ -1,0 +1,162 @@
+# ==========================================================================================
+# Repository   : Digital Sauda (Mobile)
+# Stack        : Flutter (Android)
+# Consumes     : awl-common-validation.yml, awl-build-flutter-android.yml
+# Note         : Scope sheet calls this reusable workflow "awl-build-flutter.yml"; the actual
+#                file in the platform repo is "awl-build-flutter-android.yml" and only builds
+#                Android (APK/AAB). There is no iOS build reusable workflow and no reusable
+#                "deploy" workflow for mobile (Play Store / App Store / Firebase App
+#                Distribution). Mobile "deployment" below is therefore artifact publish +
+#                an OPTIONAL Firebase App Distribution step, gated manually. Confirm whether
+#                Digital Sauda mobile needs iOS at all before scoping that build workflow.
+# ==========================================================================================
+# ------------------------------------------------------------------------------------------
+# VARIABLE & SECRET GOVERNANCE — read before touching the `with:` / `secrets:` blocks below
+# ------------------------------------------------------------------------------------------
+# GitHub Actions resolves vars/secrets in this precedence: Environment > Repository > Organization.
+#
+#   ORG level      (GitHub > Org Settings > Secrets and variables > Actions)
+#                  Use ONLY for values identical across ALL 8 repos and ALL environments.
+#                  e.g. shared Azure tenant ID, shared GCP WIF pool, org-wide runner group name.
+#
+#   REPO level     (Repo > Settings > Secrets and variables > Actions)
+#                  Use for values identical across environments WITHIN this one repo.
+#                  Rare in this pattern — most infra differs per environment by design.
+#
+#   ENVIRONMENT level (Repo > Settings > Environments > DEV | UAT | STAGING | PROD)
+#                  DEFAULT for almost everything below — DEV/UAT/STAGING/PROD point at
+#                  different infra (different VM, different GCP/Azure project, different
+#                  Firebase project, etc.), so these values must differ per environment.
+#
+# Every `${{ vars.X }}` / `${{ secrets.X }}` reference below carries an inline comment stating
+# its level. If a comment is missing, treat it as ENVIRONMENT level by default.
+# ------------------------------------------------------------------------------------------
+
+
+name: Digital Sauda Mobile - CI/CD
+
+on:
+  workflow_dispatch:
+    inputs:
+      # ------------------------------------------------------------------------------------
+      # [GITHUB ENVIRONMENT]
+      #
+      # Create these environments in the APPLICATION repository:
+      #
+      # Settings
+      #   → Environments
+      #
+      # Each environment can have its own secrets and variables, which are automatically
+      # injected into the workflow at runtime. This is the recommended way to manage
+      # environment-specific values (e.g. DEV vs UAT vs STAGING vs PROD).
+      #
+      # The workflow below uses a "determine-environment" job to map the branch name to an
+      # environment name, which is then used to select the correct environment-level secrets.
+      #
+      # If you prefer to hardcode values per branch instead of using GitHub Environments,
+      # you can remove the "determine-environment" job and replace all `${{ vars.X }}` /
+      # `${{ secrets.X }}` references with hardcoded values.
+      #
+      
+  # pull_request:
+  #   branches: [develop, uat, "release/*", main]
+  #   paths:
+  #     - "mobile/**"
+
+  # push:
+  #   branches: [develop, uat, "release/*", main]
+  #   paths:
+  #     - "mobile/**"
+
+permissions:
+  contents: read
+
+concurrency:
+  group: digital-sauda-mobile-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+
+  determine-environment:
+    name: Determine Environment
+    if: github.event_name != 'pull_request'
+    runs-on: [self-hosted, build, windows-latest]
+    outputs:
+      environment: ${{ steps.map.outputs.environment }}
+    steps:
+      - id: map
+        shell: bash
+        run: |
+          case "${GITHUB_REF_NAME}" in
+            develop)   echo "environment=DEV" >> "$GITHUB_OUTPUT" ;;
+            uat)       echo "environment=UAT" >> "$GITHUB_OUTPUT" ;;
+            release/*) echo "environment=STAGING" >> "$GITHUB_OUTPUT" ;;
+            main)      echo "environment=PROD" >> "$GITHUB_OUTPUT" ;;
+            *)          echo "environment=DEV" >> "$GITHUB_OUTPUT" ;;
+          esac
+
+  validate:
+    name: Common Validation
+    needs: [determine-environment]
+    if: always() && !failure()
+    uses: AWL-Org/awl-ghactions-reusable-workflows/.github/workflows/awl-common-validation.yml@v1.0.0
+    with:
+      environment: ${{ needs.determine-environment.outputs.environment || 'DEV' }}
+
+  build:
+    name: Build Flutter Android
+    needs: [validate]
+    uses: AWL-Org/awl-ghactions-reusable-workflows/.github/workflows/awl-build-flutter-android.yml@v1.0.0
+    with:
+      working-directory: "mobile"
+      flutter-version: "stable"
+      build-type: appbundle
+      build-mode: release
+      artifact-name: digital-sauda-mobile-${{ github.run_number }}
+
+  # ------------------------------------------------------------------------------------
+  # Security Scan — GitHub-native tooling only. CodeQL does not support Dart/Flutter, so
+  # this job runs Dependency Review only. Secret scanning + push protection (GitHub-native,
+  # org-level) still cover this repo automatically on every push.
+  # ------------------------------------------------------------------------------------
+  security-scan:
+    name: Security Scan (GitHub Advanced Security)
+    needs: [build]
+    runs-on: [self-hosted, build, windows-latest]
+    permissions:
+      contents: read
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v5
+
+      # Dependency Review — GitHub-native, PR-time only. Flags newly introduced vulnerable
+      # dependencies via pubspec.lock, using the repo's Dependency Graph.
+      - name: Dependency Review
+        if: github.event_name == 'pull_request'
+        uses: actions/dependency-review-action@v4
+        with:
+          fail-on-severity: high
+
+      # Secret scanning + push protection are GitHub-native, ORG-level features
+      # (Org Settings > Code security > Secret scanning). They run automatically on every
+      # push — no workflow step required. Confirm both are ON for this repo before go-live.
+
+  distribute:
+    name: Distribute Build (Firebase App Distribution)
+    needs: [determine-environment, security-scan]
+    if: github.event_name == 'push' && needs.determine-environment.outputs.environment != 'PROD'
+    runs-on: [self-hosted, build, windows-latest]
+    environment:
+      name: ${{ needs.determine-environment.outputs.environment }}
+    steps:
+      - uses: ./.github/actions/awl-download-artifact
+        with:
+          artifact-name: digital-sauda-mobile-${{ github.run_number }}
+          download-path: artifact
+      - name: Firebase App Distribution
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
+        with:
+          appId: ${{ vars.FIREBASE_APP_ID }}   # [ENV var] Firebase App ID used for App Distribution (per mobile app/environment)
+          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT }}   # [ENV secret] Service account JSON used to authenticate Firebase App Distribution
+          groups: testers
+          file: artifact/app-release.aab
