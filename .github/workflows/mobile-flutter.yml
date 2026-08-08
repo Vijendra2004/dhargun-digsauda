@@ -97,7 +97,7 @@ jobs:
 
   validate:
     name: Common Validation
-    needs: [determine-environment]
+    # needs: [determine-environment]
     if: always() && !failure()
     uses: devops-futuretech/dhargun-ghactions-reusable-workflows/.github/workflows/awl-common-validation.yml@main
     with:
