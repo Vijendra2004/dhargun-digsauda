@@ -112,8 +112,8 @@ jobs:
     needs: [validate]
     uses: devops-futuretech/dhargun-ghactions-reusable-workflows/.github/workflows/reusable-build-flutter-android.yml@main
     with:
-      working-directory: "mobile"
-      flutter-version: "3.13.0"
+      working-directory: "adaniwilmar"
+      flutter-version: "3.38.4"
       build-type: appbundle
       build-mode: release
       artifact-name: digital-sauda-mobile-${{ github.run_number }}
