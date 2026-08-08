@@ -1,0 +1,180 @@
+{
+  "FormId": 0,
+  "FormName": "string",
+  "QuestionsCount": 0,
+  "SelectedQuestionsString": "string",
+  "UnselectedQuestionsString": "string",
+  "PostStatus": true,
+  "PostMessage": "string",
+  "Questions": [
+    {
+      "QuestionTypeId": 1,
+      "QuestionTypeName": "string",
+      "QuestionId": 1,
+      "Query": "string",
+      "Description": "Text Entry",
+      "IsDeleted": true,
+      "IsActive": true,
+      "IsMandatory": false,
+      "CreatedDate": "DateTime",
+      "ModifiedDate": "DateTime",
+      "AnswerOptions": [
+        {
+          "QuestionId": 1,
+          "AnswerOptionId": 1,
+          "Option": "string"
+        }
+      ]
+    },
+    {
+      "QuestionTypeId": 2,
+      "QuestionTypeName": "string",
+      "QuestionId": 1,
+      "Query": "string",
+      "Description": "Yes or No",
+      "IsDeleted": true,
+      "IsActive": true,
+      "IsMandatory": true,
+      "CreatedDate": "DateTime",
+      "ModifiedDate": "DateTime",
+      "AnswerOptions": [
+        {
+          "QuestionId": 1,
+          "AnswerOptionId": 1,
+          "Option": "Yes"
+        },
+        {
+          "QuestionId": 2,
+          "AnswerOptionId": 2,
+          "Option": "No"
+        }
+      ]
+    },
+    {
+      "QuestionTypeId": 3,
+      "QuestionTypeName": "string",
+      "QuestionId": 1,
+      "Query": "string",
+      "Description": "Single Choice",
+      "IsDeleted": true,
+      "IsActive": true,
+      "IsMandatory": true,
+      "CreatedDate": "DateTime",
+      "ModifiedDate": "DateTime",
+      "AnswerOptions": [
+        {
+          "QuestionId": 1,
+          "AnswerOptionId": 1,
+          "Option": "Male"
+        },
+        {
+          "QuestionId": 2,
+          "AnswerOptionId": 2,
+          "Option": "Female"
+        },
+        {
+          "QuestionId": 2,
+          "AnswerOptionId": 3,
+          "Option": "Other"
+        }
+      ]
+    },
+    {
+      "QuestionTypeId": 3,
+      "QuestionTypeName": "string",
+      "QuestionId": 1,
+      "Query": "string",
+      "Description": "Single Choice",
+      "IsDeleted": true,
+      "IsActive": true,
+      "IsMandatory": true,
+      "CreatedDate": "DateTime",
+      "ModifiedDate": "DateTime",
+      "AnswerOptions": [
+        {
+          "QuestionId": 1,
+          "AnswerOptionId": 1,
+          "Option": "Male"
+        },
+        {
+          "QuestionId": 2,
+          "AnswerOptionId": 2,
+          "Option": "Female"
+        },
+        {
+          "QuestionId": 2,
+          "AnswerOptionId": 3,
+          "Option": "Other"
+        }
+      ]
+    },
+    {
+      "QuestionTypeId": 4,
+      "QuestionTypeName": "string",
+      "QuestionId": 1,
+      "Query": "string",
+      "Description": "Multi choice Option",
+      "IsDeleted": true,
+      "IsActive": true,
+      "IsMandatory": true,
+      "CreatedDate": "DateTime",
+      "ModifiedDate": "DateTime",
+      "AnswerOptions": [
+        {
+          "QuestionId": 1,
+          "AnswerOptionId": 1,
+          "Option": "Option1"
+        },
+        {
+          "QuestionId": 2,
+          "AnswerOptionId": 2,
+          "Option": "Option2"
+        },
+        {
+          "QuestionId": 2,
+          "AnswerOptionId": 3,
+          "Option": "Option3"
+        },
+        {
+          "QuestionId": 2,
+          "AnswerOptionId": 3,
+          "Option": "Option4"
+        }
+      ]
+    },
+    {
+      "QuestionTypeId": 4,
+      "QuestionTypeName": "string",
+      "QuestionId": 1,
+      "Query": "string",
+      "Description": "Multi choice Option",
+      "IsDeleted": true,
+      "IsActive": true,
+      "IsMandatory": true,
+      "CreatedDate": "DateTime",
+      "ModifiedDate": "DateTime",
+      "AnswerOptions": [
+        {
+          "QuestionId": 1,
+          "AnswerOptionId": 1,
+          "Option": "Option1"
+        },
+        {
+          "QuestionId": 2,
+          "AnswerOptionId": 2,
+          "Option": "Option2"
+        },
+        {
+          "QuestionId": 2,
+          "AnswerOptionId": 3,
+          "Option": "Option3"
+        },
+        {
+          "QuestionId": 2,
+          "AnswerOptionId": 3,
+          "Option": "Option4"
+        }
+      ]
+    }
+  ]
+}

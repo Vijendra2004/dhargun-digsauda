@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>948096657912-dgdenj0gujlob696j0uabd5mdkd8qofj.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.948096657912-dgdenj0gujlob696j0uabd5mdkd8qofj</string>
+	<key>API_KEY</key>
+	<string>AIzaSyDPFZyddFnsvzmhKQcwMKbKhf-uc4EGi-g</string>
+	<key>GCM_SENDER_ID</key>
+	<string>948096657912</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.booking.adaniwilmar</string>
+	<key>PROJECT_ID</key>
+	<string>adani-1ec98</string>
+	<key>STORAGE_BUCKET</key>
+	<string>adani-1ec98.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:948096657912:ios:f9729c75674f6aceeece0d</string>
+</dict>
+</plist>

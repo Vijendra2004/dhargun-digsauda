@@ -1,0 +1,7 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 20 20">
+  <g id="About_Us" transform="translate(-4 -4)">
+    <path id="Path_53431" data-name="Path 53431" d="M14,5.667A8.333,8.333,0,1,0,22.333,14,8.333,8.333,0,0,0,14,5.667ZM4,14A10,10,0,1,1,14,24,10,10,0,0,1,4,14Z" fill="#757575" fill-rule="evenodd"/>
+    <path id="Path_53432" data-name="Path 53432" d="M15.25,12.5A1.25,1.25,0,0,1,14,11.25h0A1.25,1.25,0,0,1,15.25,10h0a1.25,1.25,0,0,1,1.25,1.25h0a1.25,1.25,0,0,1-1.25,1.25Z" transform="translate(-1.667 -1)" fill="#757575" fill-rule="evenodd"/>
+    <path id="Path_53433" data-name="Path 53433" d="M14,15.667V14h1.667a.833.833,0,0,1,.833.833V19h.833v1.667H15.667a.833.833,0,0,1-.833-.833V15.667Z" transform="translate(-1.667 -1.667)" fill="#757575" fill-rule="evenodd"/>
+  </g>
+</svg>

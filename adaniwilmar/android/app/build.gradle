@@ -1,0 +1,168 @@
+plugins {
+    id "com.android.application"
+    id "org.jetbrains.kotlin.android"
+    id "dev.flutter.flutter-gradle-plugin"
+    id "com.google.gms.google-services"
+}
+
+def localProperties = new Properties()
+def localPropertiesFile = rootProject.file('local.properties')
+if (localPropertiesFile.exists()) {
+    localPropertiesFile.withReader('UTF-8') { reader ->
+        localProperties.load(reader)
+    }
+}
+
+def flutterRoot = localProperties.getProperty('flutter.sdk')
+if (flutterRoot == null) {
+    throw new GradleException("Flutter SDK not found. Define location with flutter.sdk in the local.properties file.")
+}
+
+def flutterVersionCode = localProperties.getProperty('flutter.versionCode') ?: '1'
+def flutterVersionName = localProperties.getProperty('flutter.versionName') ?: '1.0'
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+if (project.hasProperty("local.signing") || project.hasProperty("jenkins.signing")) {
+    apply from: getSigningFile()
+}
+
+android {
+    namespace "com.impiger.adaniwilmar"
+    compileSdk 36
+    ndkVersion "27.0.12077973"
+
+    lint {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+
+    packaging {
+        jniLibs {
+            pickFirsts += ["**/libsqlite3.so"]
+        }
+    }
+
+    defaultConfig {
+        applicationId "com.impiger.adaniwilmar"
+        minSdkVersion 24
+        targetSdk 35
+        versionCode 128
+        versionName "1.0.51"
+        multiDexEnabled true
+
+        ndk {
+            abiFilters "armeabi-v7a", "arm64-v8a"
+        }
+    }
+
+    buildFeatures {
+        buildConfig true
+    }
+
+    lintOptions {
+        disable 'InvalidPackage'
+        checkReleaseBuilds false
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+        coreLibraryDesugaringEnabled true
+    }
+
+    kotlinOptions {
+        jvmTarget = '1.8'
+    }
+
+    sourceSets {
+        main.java.srcDirs += 'src/main/kotlin'
+    }
+
+    flavorDimensions "adaniMode"
+    productFlavors {
+        develop { dimension "adaniMode" }
+        qa { dimension "adaniMode" }
+        uat { dimension "adaniMode" }
+    }
+
+    buildTypes {
+        debug {
+            signingConfig signingConfigs.debug
+            shrinkResources true
+            minifyEnabled true
+            crunchPngs false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+
+        release {
+            signingConfig signingConfigs.release
+            shrinkResources true
+            minifyEnabled true
+            crunchPngs false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+}
+
+def getSigningFile() {
+    def signingHome = System.getenv("SIGNING_HOME")
+    if (signingHome != null) {
+        return signingHome + project.property("jenkins.signing")
+    } else {
+        return project.property("local.signing")
+    }
+}
+
+flutter {
+    source '../..'
+}
+
+dependencies {
+
+    implementation platform('com.google.firebase:firebase-bom:33.9.0')
+
+    implementation 'com.google.firebase:firebase-config'
+    implementation 'com.google.firebase:firebase-analytics'
+
+    implementation 'androidx.multidex:multidex:2.0.1'
+
+    implementation 'com.google.android.play:app-update:2.1.0'
+    implementation 'com.google.android.play:app-update-ktx:2.1.0'
+
+    implementation 'com.squareup.retrofit2:retrofit:2.9.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.9.0'
+
+    implementation 'com.google.code.gson:gson:2.9.0'
+    implementation "androidx.appcompat:appcompat:1.5.1"
+
+    coreLibraryDesugaring "com.android.tools:desugar_jdk_libs:2.1.4"
+}
+
+configurations.all {
+    resolutionStrategy {
+        force 'androidx.core:core:1.15.0'
+        force 'androidx.core:core-ktx:1.15.0'
+        force 'androidx.activity:activity:1.10.1'
+        force 'androidx.activity:activity-ktx:1.10.1'
+        force 'androidx.browser:browser:1.8.0'
+    }
+}
+
+afterEvaluate {
+    android.applicationVariants.all { variant ->
+        def flavor = variant.flavorName
+        def buildType = variant.buildType.name
+
+        def taskName = "process${flavor.capitalize()}${buildType.capitalize()}GoogleServices"
+
+        if (tasks.findByName(taskName) != null) {
+            tasks.named("map${flavor.capitalize()}${buildType.capitalize()}SourceSetPaths").configure {
+                dependsOn(taskName)
+            }
+        }
+    }
+}
