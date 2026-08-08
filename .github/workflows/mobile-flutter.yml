@@ -113,7 +113,7 @@ jobs:
     uses: devops-futuretech/dhargun-ghactions-reusable-workflows/.github/workflows/reusable-build-flutter-android.yml@main
     with:
       working-directory: "mobile"
-      flutter-version: "stable"
+      flutter-version: "3.13.0"
       build-type: appbundle
       build-mode: release
       artifact-name: digital-sauda-mobile-${{ github.run_number }}
