@@ -51,7 +51,7 @@ jobs:
 
   build:
     name: Build .NET Framework IIS
-    uses: Vijendra2004/dhargun-ghactions-reusable-workflows/.github/workflows/reusable-build-dotnetframework-iis.yml@main
+    uses: Vijendra2004/dhargun-ghactions-reusable-workflows/.github/workflows/reusable-build-dotnet-framework-iis.yml@main
     with:
 
       # ------------------------------------------------------------------------------------
